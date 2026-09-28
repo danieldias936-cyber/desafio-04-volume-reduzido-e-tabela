@@ -1,0 +1,2 @@
+"modelo","n_arvores_treino","R2_dentro_amostra","RMSE_dentro_amostra_m3","R2_LOOCV","RMSE_LOOCV_m3","RMSE_LOOCV_pct"
+"RNA (1 camada oculta, 3 neuronios, decay=0.01)",36,0.9821,0.01207,0.9778,0.01342,5.87

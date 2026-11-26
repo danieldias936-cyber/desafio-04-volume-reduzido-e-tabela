@@ -10,3 +10,6 @@ Thumbs.db
 
 # Arquivos temporarios do Office
 ~$*
+
+# Saida automatica de graficos do R
+Rplots.pdf

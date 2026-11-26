@@ -6,8 +6,9 @@
 options(stringsAsFactors = FALSE)
 set.seed(42)
 
-dir.create("outputs", showWarnings = FALSE)
-dir.create("outputs/figuras", showWarnings = FALSE)
+# Executar a partir da raiz do repositorio: Rscript scripts/main.R
+dir.create("resultados/tabelas", recursive = TRUE, showWarnings = FALSE)
+dir.create("resultados/figuras", recursive = TRUE, showWarnings = FALSE)
 
 source("scripts/00_funcoes_comuns.R")
 source("scripts/01_relacao_hipsometrica.R")
@@ -18,8 +19,8 @@ source("scripts/04_parteB_tabela_volume.R")
 # ----------------------------------------------------------------------------
 # Leitura dos dados (convertidos para CSV a partir dos .xlsx originais)
 # ----------------------------------------------------------------------------
-cubagem    <- read.csv("data/cubagem.csv", encoding = "UTF-8", check.names = TRUE)
-inventario <- read.csv("data/inventario.csv", encoding = "UTF-8", check.names = TRUE)
+cubagem    <- read.csv("dados/cubagem.csv", encoding = "UTF-8", check.names = TRUE)
+inventario <- read.csv("dados/inventario.csv", encoding = "UTF-8", check.names = TRUE)
 
 names(cubagem)[1] <- "Talhao"
 # Renomeia por posição (robusto a problemas de acentuação/encoding no cabeçalho):
@@ -57,7 +58,7 @@ cat("Modelo escolhido:", hip$melhor_modelo, "\n\n")
 cat("== PARTE A: segmentação em toras e volumes ==\n")
 parteA <- calcular_parteA(cubagem, volumes_smalian)
 
-write.csv(parteA, "outputs/volume_reduzido_toras.csv", row.names = FALSE)
+write.csv(parteA, "resultados/tabelas/volume_reduzido_toras.csv", row.names = FALSE)
 
 cat("Árvores processadas na Parte A:", sum(!is.na(parteA$volume_geometrico_m3)), "de", nrow(parteA), "\n")
 cat("Razão média Francon/Geométrico:", round(mean(parteA$razao_francon_geometrico, na.rm = TRUE), 4),
@@ -127,13 +128,13 @@ tab_equacoes <- data.frame(
   rmse_loocv  = c(metL_simples["rmse"], metL_spurr["rmse"], metL_sh["rmse"])
 )
 rownames(tab_equacoes) <- NULL
-write.csv(tab_equacoes, "outputs/equacoes_volume.csv", row.names = FALSE)
+write.csv(tab_equacoes, "resultados/tabelas/equacoes_volume.csv", row.names = FALSE)
 cat("== Equações de volume — métricas de ajuste e LOOCV ==\n")
 print(tab_equacoes[, c("modelo", "r2_ajuste", "rmse_ajuste", "r2_loocv", "rmse_loocv")])
 cat("\n")
 
 # --- Gráficos de resíduos (diagnóstico) -------------------------------------
-png("outputs/figuras/residuos_modelos.png", width = 1200, height = 450, res = 130)
+png("resultados/figuras/residuos_modelos.png", width = 1200, height = 450, res = 130)
 par(mfrow = c(1, 3))
 plot(volumes_smalian$volume_real_m3, volumes_smalian$volume_real_m3 - loocv_simples,
      xlab = "Volume real (m3)", ylab = "Resíduo LOOCV", main = "Simples entrada", pch = 19)
@@ -148,7 +149,7 @@ dev.off()
 
 # --- Tabela de volume de dupla entrada (DAP x HT) ---------------------------
 tabela_volume <- construir_tabela_volume(volumes_smalian, predizer_dupla_geral)
-write.csv(tabela_volume, "outputs/tabela_volume.csv", row.names = FALSE)
+write.csv(tabela_volume, "resultados/tabelas/tabela_volume.csv", row.names = FALSE)
 cat("== Tabela de volume (dupla entrada,", modelo_dupla_escolhido, ") ==\n")
 print(tabela_volume)
 cat("\n")
@@ -191,9 +192,9 @@ linha_total <- data.frame(
   volume_dupla_entrada_m3   = round(total_dupla, 3)
 )
 volume_povoamento_saida <- rbind(volume_povoamento, linha_total)
-write.csv(volume_povoamento_saida, "outputs/volume_povoamento.csv", row.names = FALSE)
+write.csv(volume_povoamento_saida, "resultados/tabelas/volume_povoamento.csv", row.names = FALSE)
 
 cat("Volume total do talhão 8 (215 árvores):\n")
 cat("  Simples entrada: ", round(total_simples, 3), " m3\n", sep = "")
 cat("  Dupla entrada (", modelo_dupla_escolhido, "): ", round(total_dupla, 3), " m3\n", sep = "")
-cat("\nProcessamento concluído. Arquivos gravados em outputs/.\n")
+cat("\nProcessamento concluído. Arquivos gravados em resultados/.\n")

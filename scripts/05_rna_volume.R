@@ -1,7 +1,7 @@
 ## Desafio 04 - Parte B, itens 4 e 5: Rede Neural Artificial (RNA)
 ## Estimativa de volume a partir de DAP e HT - Talhao 8
-## Base de treino: 36 arvores cubadas (cubagem.xlsx)
-## Aplicacao: 215 arvores do inventario (inventario.xlsx)
+## Base de treino: 36 arvores cubadas (dados/cubagem.csv)
+## Aplicacao: 215 arvores do inventario (dados/inventario.csv)
 
 library(readxl)
 library(dplyr)
@@ -13,7 +13,10 @@ set.seed(42)
 # ------------------------------------------------------------
 # 1. Base de calibracao (DAP, HT, Volume real por Smalian)
 # ------------------------------------------------------------
-cub <- read_excel("cubagem.xlsx")
+# Executar a partir da raiz do repositorio: Rscript scripts/05_rna_volume.R
+dir.create("resultados/tabelas", recursive = TRUE, showWarnings = FALSE)
+dir.create("resultados/figuras", recursive = TRUE, showWarnings = FALSE)
+cub <- read.csv("dados/cubagem.csv", encoding = "UTF-8", check.names = FALSE)
 names(cub) <- c("talhao", "arv", "hi", "di", "dap", "ht")
 cub <- cub %>% arrange(arv, hi)
 
@@ -124,7 +127,7 @@ metricas_rna <- data.frame(
   RMSE_LOOCV_m3 = round(rmse_loocv, 5),
   RMSE_LOOCV_pct = round(rmse_loocv_pct, 2)
 )
-write.csv(metricas_rna, "rna_metricas.csv", row.names = FALSE)
+write.csv(metricas_rna, "resultados/tabelas/rna_metricas.csv", row.names = FALSE)
 print(metricas_rna)
 
 previsoes_loocv <- data.frame(
@@ -133,7 +136,7 @@ previsoes_loocv <- data.frame(
   volume_predito_loocv_m3 = round(loo_pred, 5),
   residuo_m3 = round(resid_loo, 5)
 )
-write.csv(previsoes_loocv, "rna_previsoes_loocv.csv", row.names = FALSE)
+write.csv(previsoes_loocv, "resultados/tabelas/rna_previsoes_loocv.csv", row.names = FALSE)
 
 # ------------------------------------------------------------
 # 6. Graficos
@@ -145,7 +148,7 @@ p1 <- ggplot(previsoes_loocv, aes(x = volume_real_m3, y = volume_predito_loocv_m
        subtitle = paste0("R2 = ", round(r2_loocv, 3), " | RMSE = ", round(rmse_loocv, 4), " m3"),
        x = "Volume real - Smalian (m3)", y = "Volume predito pela RNA (m3)") +
   theme_minimal()
-ggsave("rna_observado_vs_predito.png", p1, width = 6.5, height = 5.5, dpi = 150)
+ggsave("resultados/figuras/rna_observado_vs_predito.png", p1, width = 6.5, height = 5.5, dpi = 150, bg = "white")
 
 p2 <- ggplot(previsoes_loocv, aes(x = volume_predito_loocv_m3, y = residuo_m3)) +
   geom_point(size = 2.2, color = "#d6604d") +
@@ -153,7 +156,7 @@ p2 <- ggplot(previsoes_loocv, aes(x = volume_predito_loocv_m3, y = residuo_m3)) 
   labs(title = "RNA - Residuos (LOOCV) vs. valores preditos",
        x = "Volume predito (m3)", y = "Residuo (m3)") +
   theme_minimal()
-ggsave("rna_residuos.png", p2, width = 6.5, height = 5.5, dpi = 150)
+ggsave("resultados/figuras/rna_residuos.png", p2, width = 6.5, height = 5.5, dpi = 150, bg = "white")
 
 # ------------------------------------------------------------
 # 7. Aplicacao ao inventario (215 arvores)
@@ -162,7 +165,7 @@ altura_hipsometrica <- function(dap) {
   32.739 * (1 - exp(-0.2227 * dap))^5.333
 }
 
-inv <- read_excel("inventario.xlsx")
+inv <- read.csv("dados/inventario.csv", encoding = "UTF-8", check.names = FALSE)
 names(inv) <- c("filial","idade","regime","espacamento","clone","mes_plantio",
                  "ai","talhao","sitio","parcela","fileira","arvore","dap","ht")
 
@@ -175,7 +178,7 @@ volume_rna_povoamento <- inv %>%
             altura_m = ht_final, altura_medida = ht_medida,
             volume_rna_m3 = round(volume_rna_m3, 5))
 
-write.csv(volume_rna_povoamento, "volume_rna_povoamento.csv", row.names = FALSE)
+write.csv(volume_rna_povoamento, "resultados/tabelas/volume_rna_povoamento.csv", row.names = FALSE)
 
 # ------------------------------------------------------------
 # 8. Volume total do talhao
@@ -196,5 +199,5 @@ write.csv(
              volume_total_amostra_m3 = round(vol_total_amostra, 3),
              volume_m3_ha = round(vol_m3_ha, 2),
              volume_total_talhao_m3 = round(vol_total_talhao, 1)),
-  "rna_volume_total_talhao.csv", row.names = FALSE
+  "resultados/tabelas/rna_volume_total_talhao.csv", row.names = FALSE
 )

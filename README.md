@@ -1,105 +1,111 @@
-# Desafio 04 — Parte B, itens 4 e 5: Rede Neural Artificial (RNA)
+<div align="center">
 
-Modelagem por Rede Neural Artificial para estimativa de volume individual
-das árvores do talhão 8, a partir de DAP e HT.
+# 🌲 Desafio 04 — Volume reduzido e equações de volume
 
-## 1. Arquitetura
+**Volume de toras, equações de volume, tabela de volume e rede neural artificial**
 
-| Parâmetro | Valor | Justificativa |
-|---|---|---|
-| Entradas | DAP e HT, padronizados (z-score) | Evita que a variável de maior escala (HT, em metros) domine o treinamento sobre a de menor escala (DAP, em cm). |
-| Camadas ocultas | 1 | Amostra de calibração reduzida (36 árvores) não sustenta arquiteturas profundas. |
-| Neurônios na camada oculta | 3 | Rede final com 13 pesos para 36 observações, mantendo a razão parâmetros/observações baixa. |
-| Função de ativação | Logística (padrão do pacote `nnet`) | — |
-| Saída | Linear (`linout = TRUE`) | Problema de regressão contínua. |
-| Regularização | `decay = 0,01` (weight decay, L2) | Penaliza pesos elevados, reduzindo o risco de sobreajuste. |
-| Validação | Leave-one-out (LOOCV) | Com 36 observações, a separação de um conjunto de teste fixo reduziria demais os dados de treino; o LOOCV usa cada árvore como teste exatamente uma vez. |
+![R](https://img.shields.io/badge/R-4.3-276DC3?logo=r&logoColor=white) ![Disciplina](https://img.shields.io/badge/Mensura%C3%A7%C3%A3o%20Florestal-ICA%2FUFMG-2E7D32) ![Semestre](https://img.shields.io/badge/semestre-2026%2F2-6D4C41) ![Status](https://img.shields.io/badge/status-conclu%C3%ADdo-success)
 
-A padronização (média e desvio-padrão de DAP e HT) é recalculada, em cada
-iteração do LOOCV, apenas com as 35 árvores de treino daquela iteração —
-nunca com a árvore de teste, para não haver vazamento de informação entre
-treino e teste.
+*Disciplina Mensuração Florestal · Programa de Pós-Graduação em Ciências Florestais · ICA/UFMG*
 
-## 2. Resultados
+</div>
 
-| Métrica | Dentro da amostra (treino) | LOOCV |
-|---|---:|---:|
-| R² | 0,9821 | 0,9778 |
-| RMSE (m³) | 0,01207 | 0,01342 |
-| RMSE (%) | — | 5,87% |
+## 📋 Objetivo
 
-A diferença entre R² de treino e R² de LOOCV é de 0,0042. Uma diferença
-pequena entre desempenho dentro e fora da amostra indica ausência de
-sobreajuste relevante na arquitetura adotada.
+**Parte A:** comparar o volume reduzido de toras (Francon/Hoppus) com o volume geométrico (Huber) e o volume real (Smalian). **Parte B:** ajustar equações de volume de simples e dupla entrada, gerar a tabela de volume e aplicá-las ao inventário, comparando com uma rede neural artificial (RNA).
 
-### Comparação com as equações de regressão (ajustadas em entrega separada)
+## 🗂️ Dados
+
+- [`dados/cubagem.csv`](dados/cubagem.csv): 36 árvores cubadas do talhão 8.
+- [`dados/inventario.csv`](dados/inventario.csv): 215 árvores do inventário (alturas não medidas completadas pela relação hipsométrica do [Desafio 02](https://github.com/danieldias936-cyber/desafio-02-altura)).
+
+## 🔧 Métodos
+
+- Toreamento a partir de 0,30 m em toras de 2,00 m; volume Francon/Hoppus, Huber e Smalian por árvore.
+- Equações de volume ajustadas com validação cruzada *leave-one-out* (LOOCV): simples entrada (DAP²), Spurr (DAP² × HT) e Schumacher-Hall (logarítmica, com correção de Meyer).
+- RNA com uma camada oculta de 3 neurônios (`nnet`), entradas padronizadas e *weight decay* de 0,01, também validada por LOOCV.
+
+## 📈 Principais resultados
 
 | Modelo | R² (LOOCV) | RMSE (LOOCV) |
-|---|---:|---:|
+|---|:-:|:-:|
 | Simples entrada (DAP²) | 0,978 | 5,79% |
-| Spurr (DAP²×HT) | 0,987 | 4,43% |
+| **Spurr (DAP² × HT)** | **0,987** | **4,43%** |
 | Schumacher-Hall | 0,985 | 4,89% |
-| RNA | 0,978 | 5,87% |
+| RNA (3 neurônios) | 0,978 | 5,87% |
 
-A RNA obteve desempenho equivalente ao da equação de simples entrada e
-inferior ao das equações de dupla entrada (Spurr e Schumacher-Hall). Com
-apenas 36 árvores de calibração, um modelo que parte de uma forma funcional
-predefinida e fisicamente coerente (V proporcional a DAP²×HT, no caso de
-Spurr) tende a apresentar desempenho igual ou superior ao de uma rede
-neural, que estima a relação sem essa restrição estrutural. A vantagem
-relativa da RNA tende a aparecer em amostras de calibração maiores.
+**Equação selecionada (Spurr):** V = 0,004096 + 3,6298 × 10⁻⁵ · DAP² · HT
 
-### Análise gráfica dos resíduos
+- O volume Francon/Hoppus equivale a π/4 ≈ 0,785 do volume geométrico e, em média, a cerca de 76% do volume real.
+- Com apenas 36 árvores de calibração, a RNA não superou as equações de dupla entrada.
+- Volume do talhão estimado pela RNA: **211,3 m³/ha** e **10.290,5 m³** em 48,7 ha.
 
-- `rna_observado_vs_predito.png`: os pontos acompanham a reta 1:1 ao longo
-  de toda a amplitude de volumes observados.
-- `rna_residuos.png`: os resíduos se distribuem em torno de zero, sem
-  tendência sistemática. Observa-se leve aumento da dispersão nos volumes
-  mais altos.
+<p align="center">
+  <img src="resultados/figuras/residuos_modelos.png" alt="Resíduos das equações de volume" width="720"><br>
+  <sub><b>Resíduos das equações de volume</b></sub>
+</p>
 
-## 3. Aplicação ao inventário e volume total do talhão
+<p align="center">
+  <img src="resultados/figuras/rna_observado_vs_predito.png" alt="RNA: volume observado × predito (LOOCV)" width="720"><br>
+  <sub><b>RNA: volume observado × predito (LOOCV)</b></sub>
+</p>
 
-A RNA treinada com as 36 árvores cubadas foi aplicada às 215 árvores do
-inventário. As alturas não medidas (106 árvores, fileiras periféricas)
-foram completadas pela relação hipsométrica ajustada no Desafio 02:
+## 📁 Estrutura do repositório
 
-```
-HT = 32,739 · (1 − e^(−0,2227 · DAP))^5,333      (Chapman-Richards)
-```
-
-| Resultado | Valor |
-|---|---:|
-| Volume total estimado na amostra (215 árvores) | 55,91 m³ |
-| Volume por hectare | 211,30 m³/ha |
-| Volume total do talhão 8 (48,7 ha) | 10.290,5 m³ |
-
-## 4. Arquivos
-
-```
-entrega_rna/
-├── README.md
-├── rna_volume.R                     # treino, validacao LOOCV e aplicacao ao inventario
-├── rna_metricas.csv                 # R2 e RMSE (treino e LOOCV)
-├── rna_previsoes_loocv.csv          # previsao LOOCV individual das 36 arvores cubadas
-├── volume_rna_povoamento.csv        # volume estimado nas 215 arvores do inventario
-├── rna_volume_total_talhao.csv      # volume total (amostra, m3/ha, talhao)
-├── rna_observado_vs_predito.png
-└── rna_residuos.png
+```text
+desafio-04-volume-reduzido-e-tabela/
+├── dados/
+│   ├── cubagem.csv
+│   └── inventario.csv
+├── scripts/
+│   ├── main.R                         # executa as partes A e B
+│   ├── 00_funcoes_comuns.R
+│   ├── 01_relacao_hipsometrica.R
+│   ├── 02_cubagem_smalian.R
+│   ├── 03_parteA_volume_reduzido.R
+│   ├── 04_parteB_tabela_volume.R
+│   └── 05_rna_volume.R                # rede neural artificial
+├── resultados/
+│   ├── tabelas/                       # equações, tabela de volume, volumes por árvore
+│   └── figuras/
+└── docs/
+    ├── enunciado.pdf
+    └── rna_detalhes.md
 ```
 
-## 5. Execução
+## ▶️ Como executar
 
-Pré-requisitos (R ≥ 4.3): pacotes `readxl`, `dplyr`, `ggplot2`, `nnet`.
+A partir da raiz do repositório:
 
 ```r
 install.packages(c("readxl", "dplyr", "ggplot2", "nnet"))
 ```
 
-Colocar `cubagem.xlsx` e `inventario.xlsx` no mesmo diretório do script e
-executar:
-
 ```bash
-Rscript rna_volume.R
+Rscript scripts/main.R          # partes A e B
+Rscript scripts/05_rna_volume.R # rede neural
 ```
 
-O script é executado do início ao fim sem intervenção manual.
+## 📄 Documentos
+
+- 📝 [Enunciado](docs/enunciado.pdf)
+- 🧠 [Detalhes da rede neural](docs/rna_detalhes.md)
+
+## 🧭 Série de desafios
+
+| # | Desafio | |
+|:-:|---|:-:|
+| 01 | [Diâmetro](https://github.com/danieldias936-cyber/desafio-01-diametro) | |
+| 02 | [Altura e relação hipsométrica](https://github.com/danieldias936-cyber/desafio-02-altura) | |
+| 03 | [Volume e forma](https://github.com/danieldias936-cyber/desafio-03-volume-e-forma) | |
+| **04** | **Volume reduzido e equações de volume** | 📍 você está aqui |
+| 05 | [Taper e sortimento](https://github.com/danieldias936-cyber/desafio-05-taper-e-sortimento) | |
+| 06 | [Amostragem de Bitterlich](https://github.com/danieldias936-cyber/desafio-06-bitterlich) | |
+| 07 | Classificação de sítios florestais | ⏳ |
+| 08 | [Validação do índice de sítio](https://github.com/danieldias936-cyber/desafio-08-validacao-sitio) | |
+| 09 | [Crescimento e produção (Clutter)](https://github.com/danieldias936-cyber/desafio-09-modelo-clutter) | |
+
+## 👤 Autor
+
+**Daniel Dias** · [@danieldias936-cyber](https://github.com/danieldias936-cyber)  
+Mestrado em Ciências Florestais — ICA/UFMG, Montes Claros (MG)

@@ -4,7 +4,7 @@
 # geométrico (Huber) x volume real (Smalian), por árvore cubada.
 # ============================================================================
 
-# Parâmetros escolhidos pelo grupo (documentados também no README):
+# Parâmetros escolhidos pelo autor (documentados também no README):
 #   - Altura inicial de toreamento: 0.30 m (desconsidera o toco/base) — a
 #     base possui medição exata de diâmetro em hi = 0,30 m em todas as 36
 #     árvores, dispensando qualquer interpolação no ponto de partida.

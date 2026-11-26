@@ -17,7 +17,7 @@
 ## 🗂️ Dados
 
 - [`dados/cubagem.csv`](dados/cubagem.csv): 36 árvores cubadas do talhão 8.
-- [`dados/inventario.csv`](dados/inventario.csv): 215 árvores do inventário (alturas não medidas completadas pela relação hipsométrica do [Desafio 02](https://github.com/danieldias936-cyber/desafio-02-altura)).
+- [`dados/inventario.csv`](dados/inventario.csv): 215 árvores do inventário (alturas não medidas completadas pela relação hipsométrica do [Desafio 02](https://github.com/danieldias936-cyber/desafio_altura)).
 
 ## 🔧 Métodos
 
@@ -95,15 +95,15 @@ Rscript scripts/05_rna_volume.R # rede neural
 
 | # | Desafio | |
 |:-:|---|:-:|
-| 01 | [Diâmetro](https://github.com/danieldias936-cyber/desafio-01-diametro) | |
-| 02 | [Altura e relação hipsométrica](https://github.com/danieldias936-cyber/desafio-02-altura) | |
-| 03 | [Volume e forma](https://github.com/danieldias936-cyber/desafio-03-volume-e-forma) | |
+| 01 | [Diâmetro](https://github.com/danieldias936-cyber/desafio-diametro-eucalipto) | |
+| 02 | [Altura e relação hipsométrica](https://github.com/danieldias936-cyber/desafio_altura) | |
+| 03 | [Volume e forma](https://github.com/danieldias936-cyber/desafio_volume-e-forma) | |
 | **04** | **Volume reduzido e equações de volume** | 📍 você está aqui |
-| 05 | [Taper e sortimento](https://github.com/danieldias936-cyber/desafio-05-taper-e-sortimento) | |
+| 05 | [Taper e sortimento](https://github.com/danieldias936-cyber/desafio_taper_e_sortimento) | |
 | 06 | [Amostragem de Bitterlich](https://github.com/danieldias936-cyber/desafio-06-bitterlich) | |
 | 07 | Classificação de sítios florestais | ⏳ |
-| 08 | [Validação do índice de sítio](https://github.com/danieldias936-cyber/desafio-08-validacao-sitio) | |
-| 09 | [Crescimento e produção (Clutter)](https://github.com/danieldias936-cyber/desafio-09-modelo-clutter) | |
+| 08 | [Validação do índice de sítio](https://github.com/danieldias936-cyber/desafio-08) | |
+| 09 | [Crescimento e produção (Clutter)](https://github.com/danieldias936-cyber/desafio-09) | |
 
 ## 👤 Autor
 

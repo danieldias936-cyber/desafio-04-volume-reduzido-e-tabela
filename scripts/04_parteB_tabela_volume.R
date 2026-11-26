@@ -3,7 +3,7 @@
 # Parte B do Desafio 04: equações de volume (simples e dupla entrada),
 # tabela de volume e aplicação das abordagens ao inventário do talhão 8.
 # (O item de Rede Neural Artificial (RNA) proposto no enunciado foi
-#  deliberadamente deixado de fora, a pedido do grupo.)
+#  deliberadamente deixado de fora, por decisão do autor.)
 # ============================================================================
 
 # ----------------------------------------------------------------------------
